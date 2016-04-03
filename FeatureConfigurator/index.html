@@ -1,0 +1,70 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Configuration App</title>
+    <link href="Content/bootstrap.css" rel="stylesheet"/>
+    <script> src="Scripts/bootstrap.js"</script>
+    <script> src="Scripts/angular.js"</script>
+</head>
+<body>
+
+    <div>
+        <h2>All Features</h2>
+        <table md-colresize="md-colresize" class="md-table" ng-model="logCollection">
+            <thead class="table table-head table-hover">
+            <tr class="md-table-header">
+                <th> Description </th>
+                <th> Is  On/Off </th>
+                <th> Value </th>
+                <th> Remarks </th>
+            </tr>
+            </thead>
+            <tbody class="features">
+           
+            </tbody>
+        </table>
+    </div>
+    <div>
+        <h2>Search by Description</h2>
+        <input type="text" id="featId" size="5" />
+        <input type="button" value="Search" onclick="find();" />
+        <p id="feature" />
+    </div>
+
+    <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.0.3.min.js"></script>
+    <script>
+    var uri = 'api/features';
+
+    $(document).ready(function () {
+      // apiUrl
+      $.getJSON(uri)
+          .done(function (data) {
+            // On success, 'data' contains a list of features.
+            $.each(data, function (key, item) {
+                //format list of features to desired UX.
+                $('.features').append('<tr>' + formatItem(item)  + '</tr>');              
+            });
+          });
+    });
+
+    function formatItem(item) {
+        var columnDesc = '<td class="md-cell">' + item.Description + '</td>';
+        var columnOn = '<td class="md-cell">' + item.IsEnabled + '</td>';
+        var columnVal = '<td class="md-cell">' + item.Property.Value + '</td>';
+        var columnRem = '<td class="md-cell">' + item.Property.Remarks + '</td>';
+        return columnDesc + columnOn + columnVal + columnRem ;
+    }
+
+    function find() {
+      var id = $('#featId').val();
+      $.getJSON(uri + '/' + id)
+          .done(function (data) {
+            $('#feature').text(formatItem(data));
+          })
+          .fail(function (jqXHR, textStatus, err) {
+            $('#feature').text('Error: ' + err);
+          });
+    }
+    </script>
+</body>
+</html>
